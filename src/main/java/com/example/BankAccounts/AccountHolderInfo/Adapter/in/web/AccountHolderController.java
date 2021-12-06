@@ -20,19 +20,19 @@ public class AccountHolderController {
     private final CreateAccountUseCases createAccountUseCases;
     private final DeleteAccountUseCases deleteAccountUseCases;
     private final FetchAccountDetailsUseCases fetchAccountDetailsUseCases;
-    private final UpdateAccountUsecases updateAccountUsecases;
+    private final UpdateAccountUseCases updateAccountUseCases;
 
 
 
     public AccountHolderController(CreateAccountUseCases createAccountUseCases,
                                    DeleteAccountUseCases deleteAccountUseCases,
                                    FetchAccountDetailsUseCases fetchAccountDetailsUseCases,
-                                   UpdateAccountUsecases updateAccountUsecases)
+                                   UpdateAccountUseCases updateAccountUseCases)
     {
         this.createAccountUseCases = createAccountUseCases;
         this.deleteAccountUseCases = deleteAccountUseCases;
         this.fetchAccountDetailsUseCases = fetchAccountDetailsUseCases;
-        this.updateAccountUsecases = updateAccountUsecases;
+        this.updateAccountUseCases = updateAccountUseCases;
     }
 
 
@@ -54,7 +54,7 @@ public class AccountHolderController {
 
 
 
-    //Find all available Account type
+    //Find all available Account Holder details
     @GetMapping("/account")
     public ResponseEntity<?> getAllAccountHolderDetails() {
 
@@ -80,7 +80,7 @@ public class AccountHolderController {
     //Delete an Account holder details by id
     @DeleteMapping("/account/{id}")
     @ResponseBody
-    public ResponseEntity<CustomResponse> deleteTouristSpotById(@PathVariable Long id){
+    public ResponseEntity<CustomResponse> deleteAccountHolderDetailsById(@PathVariable Long id){
 
         try{
             String message = deleteAccountUseCases.deleteAccountHolderDetailsById(id);
@@ -98,6 +98,24 @@ public class AccountHolderController {
         }
     }
 
+
+
+    //Update an account holder details by id
+    @PutMapping("/account/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateAccountHolderDetailsById(@PathVariable Long id,
+                                                                @Valid @RequestBody AccountHolderEntity accountHolderEntity){
+        try {
+            AccountHolderEntity updatedAccountHolderDetails = updateAccountUseCases.updateAccountHolderDetailsById(id, accountHolderEntity);
+            return new ResponseEntity<AccountHolderEntity>(updatedAccountHolderDetails,HttpStatus.OK);
+        }
+        catch(MyException e){
+
+                return new ResponseEntity<CustomResponse>(new CustomResponse(
+                        "Controller: sorry, Can't Update! " + e.getMessage() ,
+                        e.getCode()),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

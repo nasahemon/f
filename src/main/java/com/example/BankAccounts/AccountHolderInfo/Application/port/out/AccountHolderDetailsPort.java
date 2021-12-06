@@ -9,4 +9,5 @@ public interface AccountHolderDetailsPort {
     public AccountHolderEntity saveAccountHolderDetails(AccountHolderEntity accountHolderEntity);
     List<AccountHolderEntity> fetchAllAccountHolderDetails()throws MyException;
     String deleteAccountHolderDetailsById(Long id) throws MyException;
+    AccountHolderEntity updateAccountHolderDetailsById(Long id,AccountHolderEntity accountHolderEntity)throws MyException;
 }

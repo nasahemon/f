@@ -3,7 +3,7 @@ package com.example.BankAccounts.AccountHolderInfo.Application.Service;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.in.CreateAccountUseCases;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.in.DeleteAccountUseCases;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.in.FetchAccountDetailsUseCases;
-import com.example.BankAccounts.AccountHolderInfo.Application.port.in.UpdateAccountUsecases;
+import com.example.BankAccounts.AccountHolderInfo.Application.port.in.UpdateAccountUseCases;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.out.AccountHolderDetailsPort;
 import com.example.BankAccounts.AccountHolderInfo.Domain.AccountHolderEntity;
 import com.example.BankAccounts.MyUtil.MyException;
@@ -18,7 +18,7 @@ public class AccountHolderInfoService
         implements CreateAccountUseCases,
         DeleteAccountUseCases,
         FetchAccountDetailsUseCases,
-        UpdateAccountUsecases
+        UpdateAccountUseCases
 {
     private final AccountHolderDetailsPort accountHolderDetailsPort;
 
@@ -40,5 +40,21 @@ public class AccountHolderInfoService
     @Override
     public String deleteAccountHolderDetailsById(Long id) throws MyException {
         return accountHolderDetailsPort.deleteAccountHolderDetailsById(id);
+    }
+
+    @Override
+    public AccountHolderEntity updateAccountHolderDetailsById(Long id, AccountHolderEntity accountHolderDetails) throws MyException {
+        try {
+            return accountHolderDetailsPort.updateAccountHolderDetailsById(id,accountHolderDetails);
+        }
+        catch(MyException e){
+            if(e.code.is4xxClientError()) {
+                throw new MyException(HttpStatus.BAD_REQUEST,
+                        "Service: Adapter caused the  exception." + e.getMessage());
+            }else{
+                throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Service: Adapter caused the  exception." + e.getMessage());
+            }
+        }
     }
 }

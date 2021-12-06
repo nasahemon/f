@@ -63,4 +63,20 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
         }
         return message;
     }
+
+    @Override
+    public AccountHolderEntity updateAccountHolderDetailsById(Long id, AccountHolderEntity accountHolderEntity) throws MyException {
+        try{
+            AccountHolderDbEntity found = accountHolderRepository.findById(id).get();
+            AccountHolderDbEntity updatedAccountHolderDetails = mapper.map(accountHolderEntity,AccountHolderDbEntity.class);
+            updatedAccountHolderDetails.setId(id);
+            AccountHolderDbEntity savedAccountHolderEntity= accountHolderRepository.save(updatedAccountHolderDetails);
+            return mapper.map(savedAccountHolderEntity,AccountHolderEntity.class);
+        }
+        catch(Exception e){
+            throw new MyException(HttpStatus.NOT_FOUND,
+                    "Adapter: repository doesn't have anything with id : " + id);
+        }
+    }
+
 }
