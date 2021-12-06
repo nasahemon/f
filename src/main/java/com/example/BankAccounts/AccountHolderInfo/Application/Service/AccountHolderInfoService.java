@@ -34,12 +34,27 @@ public class AccountHolderInfoService
 
     @Override
     public List<AccountHolderEntity> fetchAllAccountHolderDetails() throws MyException{
-        return accountHolderDetailsPort.fetchAllAccountHolderDetails();
+        try {
+            return accountHolderDetailsPort.fetchAllAccountHolderDetails();
+        }
+        catch(MyException e){
+            if(e.code.is2xxSuccessful()) {
+                throw new MyException(HttpStatus.NO_CONTENT, "Service: Adapter fail to provide any Spot");
+            }else{
+                throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR, "Service: mapping error");
+            }
+        }
     }
 
     @Override
     public String deleteAccountHolderDetailsById(Long id) throws MyException {
-        return accountHolderDetailsPort.deleteAccountHolderDetailsById(id);
+        try {
+            return accountHolderDetailsPort.deleteAccountHolderDetailsById(id);
+        }
+        catch(MyException e){
+            throw new MyException(HttpStatus.NOT_FOUND,
+                    "Service: Adapter caused the  exception." + e.getMessage());
+        }
     }
 
     @Override
@@ -48,13 +63,8 @@ public class AccountHolderInfoService
             return accountHolderDetailsPort.updateAccountHolderDetailsById(id,accountHolderDetails);
         }
         catch(MyException e){
-            if(e.code.is4xxClientError()) {
                 throw new MyException(HttpStatus.BAD_REQUEST,
                         "Service: Adapter caused the  exception." + e.getMessage());
-            }else{
-                throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Service: Adapter caused the  exception." + e.getMessage());
-            }
         }
     }
 }

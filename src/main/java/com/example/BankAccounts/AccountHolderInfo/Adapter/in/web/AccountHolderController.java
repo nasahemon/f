@@ -65,11 +65,18 @@ public class AccountHolderController {
             listOfAccountHolder = fetchAccountDetailsUseCases.fetchAllAccountHolderDetails();
             return new ResponseEntity<List<AccountHolderEntity> >(listOfAccountHolder, HttpStatus.OK);
 
-        }catch(Exception e){
+        }catch(MyException e){
+            if(e.code.is2xxSuccessful()) {
+                return new ResponseEntity<CustomResponse>(new CustomResponse(
+                        "Controller: sorry, we don't have anything to show! " + e.getMessage() ,
+                        HttpStatus.NO_CONTENT),HttpStatus.NO_CONTENT);
+            }else{
+                return new ResponseEntity<CustomResponse>(new CustomResponse(
+                        "Controller: sorry, we messed up something! " + e.getMessage() ,
+                        HttpStatus.INTERNAL_SERVER_ERROR),HttpStatus.INTERNAL_SERVER_ERROR);
 
-            return new ResponseEntity<CustomResponse>(new CustomResponse(
-                    "Controller: sorry, we messed up something! " + e.getMessage() ,
-                    HttpStatus.INTERNAL_SERVER_ERROR),HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
 
         }
 
