@@ -1,15 +1,12 @@
 package com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Adapter;
 
 import com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Entity.AccountHolderDbEntity;
-import com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Entity.AccountTypeDbEntity;
-import com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Repository.AccountHolderRepository;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.out.AccountHolderDetailsPort;
 import com.example.BankAccounts.AccountHolderInfo.Domain.AccountHolderEntity;
 import com.example.BankAccounts.MyUtil.CustomAccountMapper;
 import com.example.BankAccounts.MyUtil.MyException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +18,12 @@ import java.util.stream.Collectors;
 public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort {
 
 
-    private final AccountHolderRepository accountHolderRepository;
+
 
     private final JdbcTemplate jdbcTemplate;
 
-    public AccountHolderPersistenceAdapter(AccountHolderRepository accountHolderRepository, JdbcTemplate jdbcTemplate) {
-        this.accountHolderRepository = accountHolderRepository;
+    public AccountHolderPersistenceAdapter( JdbcTemplate jdbcTemplate) {
+
         this.jdbcTemplate = jdbcTemplate;
     }
     ModelMapper mapper = new ModelMapper();
@@ -35,8 +32,19 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
     @Override
     public AccountHolderEntity saveAccountHolderDetails(AccountHolderEntity accountHolderEntity) {
         AccountHolderDbEntity accountHolderDbEntity = mapper.map(accountHolderEntity,AccountHolderDbEntity.class);
-        AccountHolderDbEntity savedAccountHolderDbEntity = accountHolderRepository.save(accountHolderDbEntity);
-        AccountHolderEntity savedAccountHolderEntity = mapper.map(savedAccountHolderDbEntity,AccountHolderEntity.class);
+        String sql = "INSERT INTO public.account_holder_info\n" +
+                "(address, age, contact_no, created_on, date_of_birth, gender, hobby, \"name\", id)\n" +
+                "VALUES(?,?,?,?,?,?,?,?,?);";
+        jdbcTemplate.update(sql,accountHolderDbEntity.getAddress(),
+                accountHolderDbEntity.getAge(),
+                accountHolderDbEntity.getContactNo(),
+                accountHolderDbEntity.getCreatedOn(),
+                accountHolderDbEntity.getDateOfBirth(),
+                accountHolderDbEntity.getGender(),
+                accountHolderDbEntity.getHobby(),
+                accountHolderDbEntity.getName(),
+                accountHolderDbEntity.getAccountType().getId());
+        AccountHolderEntity savedAccountHolderEntity = mapper.map(accountHolderDbEntity,AccountHolderEntity.class);
         return savedAccountHolderEntity;
     }
 
