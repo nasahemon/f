@@ -4,9 +4,11 @@ import com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Entity
 import com.example.BankAccounts.AccountHolderInfo.Adapter.out.persistance.Repository.AccountHolderRepository;
 import com.example.BankAccounts.AccountHolderInfo.Application.port.out.AccountHolderDetailsPort;
 import com.example.BankAccounts.AccountHolderInfo.Domain.AccountHolderEntity;
+import com.example.BankAccounts.MyUtil.CustomAccountMapper;
 import com.example.BankAccounts.MyUtil.MyException;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,8 +21,11 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
 
     private final AccountHolderRepository accountHolderRepository;
 
-    public AccountHolderPersistenceAdapter(AccountHolderRepository accountHolderRepository) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public AccountHolderPersistenceAdapter(AccountHolderRepository accountHolderRepository, JdbcTemplate jdbcTemplate) {
         this.accountHolderRepository = accountHolderRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
     ModelMapper mapper = new ModelMapper();
 
@@ -36,20 +41,39 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
     @Override
     public List<AccountHolderEntity> fetchAllAccountHolderDetails() throws MyException {
         List<AccountHolderEntity> ListOfAccountHolder;
-
         try {
-            ListOfAccountHolder = accountHolderRepository.findAll().stream()
+            String sql = "SELECT a.account_id ,a.address ,a.age ,a.contact_no ,a.created_on ,a.date_of_birth ,a.gender ,a.hobby ,a.\"name\" ,a.id ,t.\"type\" \n" +
+                    "FROM public.account_holder_info a\n" +
+                    "INNER join public.account_types t \n" +
+                    "on a.id = t.id ;";
+            List<AccountHolderDbEntity> AccountHolders = jdbcTemplate.query(sql, new CustomAccountMapper());
+
+            ListOfAccountHolder = AccountHolders.stream()
                     .map(t -> mapper.map(t, AccountHolderEntity.class)).collect(Collectors.toList());
-        }
-        catch (NullPointerException e){
-            throw new MyException(HttpStatus.NO_CONTENT, "Adapter: Repository is empty.");
-        }
-        catch(Exception e){
+        }catch(Exception e){
             e.printStackTrace();
             throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR,"Adapter: Exception thrown by system");
         }
         return ListOfAccountHolder;
     }
+
+//    @Override
+//    public List<AccountHolderEntity> fetchAllAccountHolderDetails() throws MyException {
+//        List<AccountHolderEntity> ListOfAccountHolder;
+//
+//        try {
+//            ListOfAccountHolder = accountHolderRepository.findAll().stream()
+//                    .map(t -> mapper.map(t, AccountHolderEntity.class)).collect(Collectors.toList());
+//        }
+//        catch (NullPointerException e){
+//            throw new MyException(HttpStatus.NO_CONTENT, "Adapter: Repository is empty.");
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//            throw new MyException(HttpStatus.INTERNAL_SERVER_ERROR,"Adapter: Exception thrown by system");
+//        }
+//        return ListOfAccountHolder;
+//    }
 
     @Override
     public String deleteAccountHolderDetailsById(Long id) throws MyException {
@@ -79,4 +103,13 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
         }
     }
 
+
+    public List<AccountHolderDbEntity> getAllAccountHolder(){
+        String sql = "SELECT a.account_id ,a.address ,a.age ,a.contact_no ,a.created_on ,a.date_of_birth ,a.gender ,a.hobby ,a.\"name\" ,a.id ,t.\"type\" \n" +
+                "FROM public.account_holder_info a\n" +
+                "INNER join public.account_types t \n" +
+                "on a.id = t.id ;";
+        List<AccountHolderDbEntity> AccountHolders = jdbcTemplate.query(sql, new CustomAccountMapper());
+        return AccountHolders;
+    }
 }

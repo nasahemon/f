@@ -8,6 +8,7 @@ import java.util.List;
 public interface AccountTypePort {
     AccountTypeEntity saveAccountType(AccountTypeEntity accountType);
     List<AccountTypeEntity> fetchAllAccountType();
+    AccountTypeEntity updateAccountType(Long id,AccountTypeEntity accountType);
     String deleteAccountTypeById(Long id) throws MyException;
 }
 

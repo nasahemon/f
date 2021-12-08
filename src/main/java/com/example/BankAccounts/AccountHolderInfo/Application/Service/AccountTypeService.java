@@ -27,6 +27,12 @@ public class AccountTypeService implements AccountTypeUseCases {
         return accountTypePort.fetchAllAccountType();
     }
 
+
+    @Override
+    public AccountTypeEntity updateAccountType(Long id, AccountTypeEntity accountType) {
+        return accountTypePort.updateAccountType(id,accountType);
+    }
+
     @Override
     public String deleteAccountTypeById(Long id) throws MyException {
         return accountTypePort.deleteAccountTypeById(id);

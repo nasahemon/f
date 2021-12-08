@@ -6,7 +6,8 @@ import com.example.BankAccounts.MyUtil.MyException;
 import java.util.List;
 
 public interface AccountTypeUseCases {
-    public AccountTypeEntity saveAccountType(AccountTypeEntity accountType);
+    AccountTypeEntity saveAccountType(AccountTypeEntity accountType);
     List<AccountTypeEntity> fetchAllAccountType();
+    AccountTypeEntity updateAccountType(Long id,AccountTypeEntity accountType);
     String deleteAccountTypeById(Long id) throws MyException;
 }

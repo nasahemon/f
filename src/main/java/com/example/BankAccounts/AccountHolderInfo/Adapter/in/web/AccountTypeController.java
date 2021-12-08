@@ -2,6 +2,7 @@ package com.example.BankAccounts.AccountHolderInfo.Adapter.in.web;
 
 
 import com.example.BankAccounts.AccountHolderInfo.Application.port.in.AccountTypeUseCases;
+import com.example.BankAccounts.AccountHolderInfo.Domain.AccountHolderEntity;
 import com.example.BankAccounts.AccountHolderInfo.Domain.AccountTypeEntity;
 import com.example.BankAccounts.MyUtil.CustomResponse;
 import com.example.BankAccounts.MyUtil.MyException;
@@ -64,6 +65,21 @@ public class AccountTypeController {
     }
 
 
+    @PutMapping("/account/type/{id}")
+    @ResponseBody
+    public ResponseEntity<?> updateAccountHolderDetailsById(@PathVariable Long id,
+                                                            @Valid @RequestBody AccountTypeEntity accountTypeEntity){
+        try {
+            AccountTypeEntity updatedAccountHolderDetails = accountTypeUseCases.updateAccountType(id, accountTypeEntity);
+            return new ResponseEntity<AccountTypeEntity>(updatedAccountHolderDetails,HttpStatus.OK);
+        }
+        catch(Exception e){
+
+            return new ResponseEntity<CustomResponse>(new CustomResponse(
+                    "Controller: sorry, Can't Update! " + e.getMessage() ,
+                    HttpStatus.INTERNAL_SERVER_ERROR),HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
     //Delete an Account type by id
@@ -75,10 +91,10 @@ public class AccountTypeController {
             String message = accountTypeUseCases.deleteAccountTypeById(id);
             if(message.equals("ok")) {
                 return new ResponseEntity<CustomResponse>(new CustomResponse(
-                        "The spot is Deleted successfully", HttpStatus.OK), HttpStatus.OK);
+                        "The type is Deleted successfully", HttpStatus.OK), HttpStatus.OK);
             }else {
                 return new ResponseEntity<CustomResponse>(new CustomResponse(
-                        "The spot Still exist", HttpStatus.OK), HttpStatus.OK);
+                        "The type Still exist", HttpStatus.OK), HttpStatus.OK);
             }
         }
         catch(MyException e){

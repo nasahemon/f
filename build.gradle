@@ -17,7 +17,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.projectlombok:lombok:1.18.20'
-	runtimeOnly 'com.h2database:h2'
+	//runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params:5.1.0'
@@ -26,6 +26,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 	implementation 'javax.validation:validation-api:2.0.1.Final'
 	implementation 'org.modelmapper:modelmapper:2.4.4'
+
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
 }
 

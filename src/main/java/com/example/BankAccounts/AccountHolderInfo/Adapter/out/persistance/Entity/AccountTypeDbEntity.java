@@ -12,7 +12,7 @@ public class AccountTypeDbEntity {
     private Long id;
 
 
-    @Column(name = "account_type", unique = true)
+    @Column(name = "type", unique = true)
     private String type;
 
     public AccountTypeDbEntity() {

@@ -21,10 +21,8 @@ public class AccountHolderDbEntity {
 
     @Column(name="contact_no")
     private String contactNo;
-
     @Column(name="age")
     private int age;
-
     @Column(name="date_of_birth")
     private Date dateOfBirth;
 
@@ -32,7 +30,6 @@ public class AccountHolderDbEntity {
     private String gender;
     @Column(name = "hobby")
     private String hobby;
-
     @Column(name="created_on")
     private Date createdOn;
 
@@ -137,4 +134,5 @@ public class AccountHolderDbEntity {
     public void setAccountType(AccountTypeDbEntity accountType) {
         this.accountType = accountType;
     }
+
 }
