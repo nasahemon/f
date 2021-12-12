@@ -56,9 +56,9 @@ public class AccountHolderPersistenceAdapter implements AccountHolderDetailsPort
                     "FROM public.account_holder_info a\n" +
                     "INNER join public.account_types t \n" +
                     "on a.id = t.id ;";
-            List<AccountHolderDbEntity> AccountHolders = jdbcTemplate.query(sql, new CustomAccountMapper());
+            List<AccountHolderDbEntity> accountHolders = jdbcTemplate.query(sql, new CustomAccountMapper());
 
-            ListOfAccountHolder = AccountHolders.stream()
+            ListOfAccountHolder = accountHolders.stream()
                     .map(t -> mapper.map(t, AccountHolderEntity.class)).collect(Collectors.toList());
         }catch(Exception e){
             e.printStackTrace();

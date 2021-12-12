@@ -6,14 +6,18 @@ import com.example.BankAccounts.AccountHolderInfo.Domain.AccountHolderEntity;
 import com.example.BankAccounts.AccountHolderInfo.Domain.AccountTypeEntity;
 import com.example.BankAccounts.MyUtil.CustomResponse;
 import com.example.BankAccounts.MyUtil.MyException;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins="http://localhost:4200")
 @RequestMapping("/v1")
 public class AccountHolderController {
 
@@ -35,15 +39,19 @@ public class AccountHolderController {
         this.updateAccountUseCases = updateAccountUseCases;
     }
 
+    ModelMapper mapper = new ModelMapper();
+
 
     // Store an Account Holder Details
     @PostMapping("/account")
-    public ResponseEntity<?> storeATouristSpotByDTO(@Valid @RequestBody AccountHolderEntity accountHolderDetails) {
+    public ResponseEntity<?> storeATouristSpotByDTO(@Valid @RequestBody AccountHolderInfo givenAccountHolderDetails) {
 
-        AccountHolderEntity  returnedAccountHolderDetails = null;
+
+        AccountHolderEntity  accountHolderDetails = convertToAccountHolderEntity(givenAccountHolderDetails);
         try{
-            returnedAccountHolderDetails = createAccountUseCases.saveAccountHolderDetails(accountHolderDetails);
-            return new ResponseEntity<AccountHolderEntity>(returnedAccountHolderDetails, HttpStatus.OK);
+            AccountHolderEntity returnedAccountHolderDetails = createAccountUseCases.saveAccountHolderDetails(accountHolderDetails);
+            return new ResponseEntity<CustomResponse>(new CustomResponse(
+                    "Account has been saved successfully!",HttpStatus.OK), HttpStatus.OK);
         }
         catch(Exception e){
             return new ResponseEntity<CustomResponse>(new CustomResponse(
@@ -59,11 +67,15 @@ public class AccountHolderController {
     public ResponseEntity<?> getAllAccountHolderDetails() {
 
         //Required variables
-        List<AccountHolderEntity> listOfAccountHolder;
+        List<AccountHolderInfo> fetchedListOfAccountHolder;
 
         try{
-            listOfAccountHolder = fetchAccountDetailsUseCases.fetchAllAccountHolderDetails();
-            return new ResponseEntity<List<AccountHolderEntity> >(listOfAccountHolder, HttpStatus.OK);
+            List<AccountHolderEntity> listOfAccountHolder = fetchAccountDetailsUseCases.fetchAllAccountHolderDetails();
+//            fetchedListOfAccountHolder = listOfAccountHolder.stream()
+//                    .map(t -> mapper.map(t, AccountHolderInfo.class)).collect(Collectors.toList());
+            fetchedListOfAccountHolder = convertListToAccountHolderInfo(listOfAccountHolder);
+            return new ResponseEntity<List<AccountHolderInfo> >(fetchedListOfAccountHolder, HttpStatus.OK);
+//            return new ResponseEntity<List<AccountHolderEntity> >(listOfAccountHolder, HttpStatus.OK);
 
         }catch(MyException e){
             if(e.code.is2xxSuccessful()) {
@@ -125,4 +137,49 @@ public class AccountHolderController {
     }
 
 
+
+
+
+    public AccountHolderEntity convertToAccountHolderEntity(AccountHolderInfo accountHolderInfo){
+        AccountHolderEntity a = new AccountHolderEntity();
+        a.setId(accountHolderInfo.getId());
+        a.setName(accountHolderInfo.getName());
+        a.setAge(accountHolderInfo.getAge());
+        a.setAddress(accountHolderInfo.getPresentAddress());
+        a.setContactNo(accountHolderInfo.getContactNo());
+        a.setCreatedOn(accountHolderInfo.getAccountCreateDate());
+        a.setDateOfBirth(accountHolderInfo.getDob());
+        a.setGender(accountHolderInfo.getGender());
+        a.setHobby(accountHolderInfo.getHobby());
+        a.setAccountType(accountHolderInfo.getAccountType());
+        return a;
+    }
+
+
+    public AccountHolderInfo convertToAccountHolderInfo(AccountHolderEntity accountHolderInfo){
+        AccountHolderInfo a = new AccountHolderInfo();
+        a.setId(accountHolderInfo.getId());
+        a.setName(accountHolderInfo.getName());
+        a.setAge(accountHolderInfo.getAge());
+        a.setPresentAddress(accountHolderInfo.getAddress());
+        a.setContactNo(accountHolderInfo.getContactNo());
+        a.setAccountCreateDate(accountHolderInfo.getCreatedOn());
+        a.setDob(accountHolderInfo.getDateOfBirth());
+        a.setGender(accountHolderInfo.getGender());
+        a.setHobby(accountHolderInfo.getHobby());
+        a.setAccountType(accountHolderInfo.getAccountType());
+        return a;
+    }
+
+
+
+    public List<AccountHolderInfo> convertListToAccountHolderInfo(List<AccountHolderEntity> listOfEntity){
+        List<AccountHolderInfo> returnList = new ArrayList<>();
+
+        for (AccountHolderEntity entity:listOfEntity) {
+            returnList.add(convertToAccountHolderInfo(entity));
+        }
+
+        return returnList;
+    }
 }
